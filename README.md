@@ -30,24 +30,29 @@
 
 ```bash
 training_service/
-├── main.py                    # FastAPI 入口
+├── main.py                    # FastAPI 启动入口
 ├── api/
-│   └── endpoints.py           # API 路由定义
+│   └── endpoints.py           # 路由定义（接收训练请求）
 ├── schemas/
-│   └── training_request.py    # 请求体结构定义（Pydantic）
+│   ├── training_request.py    # 请求体结构
+│   ├── task_info.py           # task 状态、进度定义
+│   └── gpu_info.py            # GPU 资源结构定义
 ├── services/
-│   ├── trainer_factory.py     # 根据请求动态选择训练方法（如 PPO/GPRO）
-│   ├── config_builder.py      # 将请求体转换为训练统一配置
-│   └── task_manager.py        # 启动/管理异步训练任务
-├── trainers/
-│   ├── base.py                # 所有 Trainer 的抽象基类
-│   ├── ppo_trainer.py         # PPO 实现
-│   └── gpro_trainer.py        # GPRO 实现
-├── utils/
-│   └── logger.py              # 日志封装
-│   └── runner.py              # subprocess 脚本执行器
-└── models/
-    └── model_manager.py       # 训练后模型的保存/回传逻辑
+│   ├── training_dispatcher.py # 核心调度服务（调用下面这些）
+│   ├── training_launcher      # 启动训练服务
+│   ├── resource_service.py    # GPU & 节点资源
+│   ├── scheduler_service.py   # 资源调度
+│   ├── task_service.py        # task 状态注册、查询
+│   ├── monitor_service.py     # 训练任务运行状态监控
+│   └── sync_service.py        # 权重同步 / 回传给 sampler
+├── infra/
+│   ├── gpu_monitor.py         # GPU 状态检查（nvidia-smi 等）
+│   ├── shell_runner.py        # SSH远程训练任务执行
+│   └── file_watcher.py        # 日志/状态文件监听
+└── utils/
+    └── logger.py              # 日志封装
+
+
 
 ```
 
